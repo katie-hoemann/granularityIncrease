@@ -1,5 +1,5 @@
 SCRIPTS
-granularity_increase_analyses.m = assesses change in granularity over experience sampling, fits Bayesian multiple regressions and plots multiverse results
+granularity_increase_analyses_REVISED.m = assesses change in daily granularity over experience sampling, fits Bayesian multiple regressions and plots results
 
 INPUT
 18ARIEOD_daily_filtered.xlsx = raw experience sampling data including day, time, and time of day variables; 'No Late Surveys' worksheet used in time-varying networks (note: 'filtered' refers to variables, not cases)
