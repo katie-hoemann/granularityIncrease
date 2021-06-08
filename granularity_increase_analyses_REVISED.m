@@ -103,28 +103,8 @@ for i_subject = 1:length(subjectIDlist)
     %% get negative ICC value stats
     numNegICCs(i_subject) = sum(negICCs);
     propNegICCs(i_subject) = sum(negICCs)/numDays(i_subject);
-    clear rawICC rtoZ zInv negICCs
+    clear rawICC rtoZ zInv negICCs   
 end
-
-%% compile all variables of interest, loading additional data as needed
-% experience sampling stats and measures of experienced affect
-samplingData = [numPrompts' numDays' maxDays' missingDays' numPrompts_day' mPositive' mNegative' sdPositive' sdNegative'];
-samplingColumns = {'numPrompts','numDays','maxDays','missingDays','numPrompts_day','mPos','mNeg','sdPos','sdNeg'};
-
-% text-based descriptions of events from EOD surveys
-rawData_text = importdata('EOD_event_description_variables.xlsx');
-textData = rawData_text.data(:,3:end);
-textColumns = rawData_text.colheaders(3:end);
-
-% other related variables
-rawData_other = importdata('Other_granularity_related_variables.xlsx');
-otherData = rawData_other.data(:,2:end);
-otherColumns = rawData_other.colheaders(2:end);
-
-% compile everything for given # of starting/ending days
-allData = [subjectIDlist samplingData textData otherData];
-allColumns = ['PPID' samplingColumns textColumns otherColumns];
-allData_Table = array2table(allData,'VariableNames',allColumns);
 
 %% convert tables to matrices
 zInv_n_array = real(table2array(zInv_n(:,2:end)))';
@@ -178,9 +158,24 @@ sd_p = std(granCoefs_p(:,2));
 d_n = m_n/sd_n; % effect size estimate
 d_p = m_p/sd_p; % effect size estimate
 
+%% compile all variables of interest, loading additional data as needed
+% experience sampling stats and measures of experienced affect
+samplingData = [numPrompts' numDays' maxDays' missingDays' numPrompts_day' mPositive' mNegative' sdPositive' sdNegative'];
+samplingColumns = {'numPrompts','numDays','maxDays','missingDays','numPrompts_day','mPos','mNeg','sdPos','sdNeg'};
+
+% other related variables
+rawData_other = importdata('Granularity_improvement_variables.xlsx');
+otherData = rawData_other.data(:,2:end);
+otherColumns = rawData_other.colheaders(2:end);
+
+% compile everything
+allData = [subjectIDlist samplingData otherData];
+allColumns = ['PPID' samplingColumns otherColumns];
+allData_Table = array2table(allData,'VariableNames',allColumns);
+
 %% run regressions predicting change in granularity
 % predictors: numDays, numPrompts_day, meanAll_prompt, affect_prompt, mPos, mNeg, restRSA_p2m
-predictors = [allData(:,3) allData(:,6) allData(:,18) allData(:,27) allData(:,7) allData(:,8) allData(:,65)];
+predictors = [allData(:,3) allData(:,6) allData(:,11) allData(:,12) allData(:,7) allData(:,8) allData(:,13)];
 predictors_S = zscore(predictors,[],1);
 granCoefs_n_S = zscore(granCoefs_n(:,2));
 granCoefs_p_S = zscore(granCoefs_p(:,2));
